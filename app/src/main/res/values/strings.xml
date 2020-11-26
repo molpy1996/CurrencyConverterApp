@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">CurrencyConverterApp</string>
+
+    <string name="Lbutton">0</string>
+    <string name="Rbutton">0</string>
+    <string name="convert_btn">Convert</string>
+
+    <string-array name="currenciesSpinner1">
+        <item>EUR</item>
+        <item>USD</item>
+        <item>JPY</item>
+        <item>MXN</item>
+    </string-array>
+
+    <string-array name="currenciesSpinner2">
+        <item>EUR</item>
+        <item>USD</item>
+        <item>JPY</item>
+        <item>MXN</item>
+    </string-array>
+</resources>

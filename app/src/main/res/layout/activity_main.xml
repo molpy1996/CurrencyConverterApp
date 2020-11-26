@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    tools:layout_editor_absoluteX="20dp"
+    tools:layout_editor_absoluteY="0dp">
+
+    <Spinner
+        android:id="@+id/currencies_spinner1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_alignBottom="@+id/Lbutton"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="90dp"
+        android:layout_marginBottom="145dp"
+        app:layout_constraintBottom_toTopOf="@+id/currencies_spinner2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/Lbutton"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/currencies_spinner2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_alignBottom="@+id/Lbutton"
+        android:layout_marginEnd="90dp"
+        android:layout_marginBottom="318dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/Rbutton"
+        app:layout_constraintTop_toBottomOf="@+id/currencies_spinner1" />
+
+    <EditText
+        android:id="@+id/Lbutton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_alignBottom="@+id/button"
+        android:layout_marginStart="90dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="39dp"
+        android:layout_marginBottom="49dp"
+        android:autofillHints=""
+        android:inputType="number"
+        android:labelFor="@id/Lbutton"
+        android:text="@string/Lbutton"
+        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintEnd_toStartOf="@+id/currencies_spinner1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/Rbutton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_alignBottom="@+id/button"
+        android:layout_marginStart="90dp"
+        android:layout_marginEnd="41dp"
+        android:layout_marginBottom="318dp"
+        android:autofillHints=""
+        android:gravity="center"
+        android:text="@string/Lbutton"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/currencies_spinner2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="231dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="53dp"
+        android:text="@string/convert_btn"
+        app:layout_constraintBottom_toTopOf="@+id/Rbutton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Lbutton" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
