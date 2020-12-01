@@ -2,6 +2,7 @@ package com.example.currencyconverterapp;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -32,9 +34,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     int chosenCurrency1;
     int chosenCurrency2;
 
+    double EURtoUSD = 0;
+    double EURtoJPY = 0;
+    double EURtoMXN = 0;
 
-
-    public HashMap<String,Double> rateTable;
+    public HashMap<String,Double> rateTable = new HashMap<String, Double>();
+    DownloadCurrencyTask dlCurr;
 
     public MainActivity() throws MalformedURLException {
     }
@@ -52,59 +57,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         button = (Button) findViewById(R.id.button);
 
-        rateTable = null;
-
-        Log.i("onCreate", "after setOnClickListener");
-    }
-
-    public Double conversionRate(int curr1, int curr2){
-        Log.i("conversionRate", "in conversionRate function");
-
-        double rate=0;
-        //si les 2 monnaies sont les mêmes on ne fait rien (rate = 1)
-        if(curr1==curr2){
-            rate=1;
-        }else if(curr1 == 0 && curr2 == 1) {
-            //EURUSD
-            Log.i("conversionRate", "in EURUSD");
-
-            rate = rateTable.get("USD");
-        }
-        else if(curr1 == 0 && curr2 == 2){
-            //EURJPY
-            rate = rateTable.get("JPY");
-        }else if(curr1 == 0 && curr2 == 3){
-            //EURMXN
-            rate = rateTable.get("MXN");
-        }else if(curr1 == 1 && curr2 == 0){
-            //USDEUR
-            rate = 1/rateTable.get("USD");
-        }else if(curr1 == 1 && curr2 == 2){ //recommencer ici
-            //USDJPY
-            rate = (1/rateTable.get("USD")) * rateTable.get("JPY");
-        }else if(curr1 == 1 && curr2 == 3){
-            //USDMXN
-            rate = (1/rateTable.get("USD")) * rateTable.get("MXN");
-        }else if(curr1 == 2 && curr2 == 0){
-            //JPYEUR
-            rate = 1/rateTable.get("JPY");
-        }else if(curr1 == 2 && curr2 == 1){
-            //JPYUSD
-            rate = (1/rateTable.get("JPY")) * rateTable.get("USD");
-        }else if(curr1 == 2 && curr2 == 3){
-            //JPYMXN
-            rate = (1/rateTable.get("JPY")) * rateTable.get("MXN");
-        }else if(curr1 == 3 && curr2 == 0){
-            //MXNEUR
-            rate = rateTable.get("MXN");
-        }else if(curr1 == 3 && curr2 == 1){
-            //MXNUSD
-            rate = (1/rateTable.get("MXN")) * rateTable.get("USD");
-        }else if(curr1 == 3 && curr2 == 2){
-            //MXNJPY
-            rate = (1/rateTable.get("MXN")) * rateTable.get("JPY");
-        }
-        return rate;
+        // Select the policy of the app
+        // An other param is added in the AndroidManifest.xml
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
     }
 
     @Override
@@ -113,6 +69,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(v.getId() == R.id.button){
 
             Log.i("onClick", "Pushed the button");
+
+            EURtoUSD = getRatesById("USD");
+            EURtoJPY = getRatesById("JPY");
+            EURtoMXN = getRatesById("MXN");
+
+            Log.i("onClick", "EURtoUSD = " + String.valueOf(EURtoUSD));
+            Log.i("onClick", "EURtoJPY = " + String.valueOf(EURtoJPY));
+            Log.i("onClick", "EURtoMXN = " + String.valueOf(EURtoMXN));
 
             String strUserName = toConvert.getText().toString();
             if(TextUtils.isEmpty(strUserName)) {
@@ -142,17 +106,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onStart() {
-        super.onStart();
-
-        DownloadCurrencyTask dlCurr = new DownloadCurrencyTask();
-        dlCurr.doInBackground();
-
-        rateTable = dlCurr.getUpdatedRates();
-
-        //updating background task that update the rates
-        //dlCurr.execute();
 
         Log.i("onStart", "in onStart function");
+
+        super.onStart();
+
+        dlCurr = new DownloadCurrencyTask();
+
+        try {
+            for(HashMap.Entry<String, Double> entry : dlCurr.execute().get().entrySet()) {
+                rateTable.put(entry.getKey(), entry.getValue());
+                Log.i("onStart", "key : "+entry.getKey()+", value : "+entry.getValue());
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
 
         currencies1 = (Spinner) findViewById(R.id.currencies_spinner1);
         currencies2 = (Spinner) findViewById(R.id.currencies_spinner2);
@@ -177,5 +145,63 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         button.setOnClickListener(this);
 
         Log.i("OnResume", "in onResume Function");
+    }
+
+    public double getRatesById(String curr){
+        for(HashMap.Entry<String, Double> entry : rateTable.entrySet()) {
+            if(entry.getKey().equals(curr))
+                return entry.getValue();
+            else
+                continue;
+        }
+        return Double.valueOf(0);
+    }
+
+    public double conversionRate(int curr1, int curr2){
+        Log.i("conversionRate", "in conversionRate function");
+
+        double rate=0;
+        //si les 2 monnaies sont les mêmes on ne fait rien (rate = 1)
+        if(curr1==curr2){
+            rate=1;
+        }else if(curr1 == 0 && curr2 == 1) {
+            //EURUSD
+            rate = EURtoUSD;
+        }
+        else if(curr1 == 0 && curr2 == 2){
+            //EURJPY
+            rate = EURtoJPY;
+        }else if(curr1 == 0 && curr2 == 3){
+            //EURMXN
+            rate = EURtoMXN;
+        }else if(curr1 == 1 && curr2 == 0){
+            //USDEUR
+            rate = 1/EURtoUSD;
+        }else if(curr1 == 1 && curr2 == 2){
+            //USDJPY
+            rate = (1/EURtoUSD) * EURtoJPY;
+        }else if(curr1 == 1 && curr2 == 3){
+            //USDMXN
+            rate = (1/EURtoUSD) * EURtoMXN;
+        }else if(curr1 == 2 && curr2 == 0){
+            //JPYEUR
+            rate = 1/EURtoJPY;
+        }else if(curr1 == 2 && curr2 == 1){
+            //JPYUSD
+            rate = (1/EURtoJPY) * EURtoUSD;
+        }else if(curr1 == 2 && curr2 == 3){
+            //JPYMXN
+            rate = (1/EURtoJPY) * EURtoMXN;
+        }else if(curr1 == 3 && curr2 == 0){
+            //MXNEUR
+            rate = EURtoMXN;
+        }else if(curr1 == 3 && curr2 == 1){
+            //MXNUSD
+            rate = (1/EURtoMXN) * EURtoUSD;
+        }else if(curr1 == 3 && curr2 == 2){
+            //MXNJPY
+            rate = (1/EURtoMXN) * EURtoJPY;
+        }
+        return rate;
     }
 }

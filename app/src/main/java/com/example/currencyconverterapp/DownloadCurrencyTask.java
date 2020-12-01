@@ -1,5 +1,6 @@
 package com.example.currencyconverterapp;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -12,6 +13,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -28,36 +30,25 @@ public class DownloadCurrencyTask extends AsyncTask<String, Void, HashMap<String
     private static final String CUBE_NODE = "//Cube/Cube/Cube";
     private static final String RATE = "rate";
 
-    //public ArrayList<HashMap<String, Double>> rates = new ArrayList<HashMap<String, Double>>();
-    public HashMap<String, Double> updatedRates = new HashMap<String, Double>();
     public URL currencyRateXML = null;
-
-    public HashMap<String, Double> getUpdatedRates(){
-        return this.updatedRates;
-    }
-
-    /*public void setUpdatedRates(String curr, Double rate){
-        this.updatedRates.put(curr, rate);
-    }*/
 
     @Override
     protected HashMap<String, Double> doInBackground(String... strings) {
 
         try {
-            currencyRateXML = new URL("http://www.ecb.europa.eu/stats/eurofxref/eurofxrefdaily.xml");
-
-
-            this.updatedRates.putAll(this.parseXMLtoHashmap(currencyRateXML));
-
+            currencyRateXML = new URL("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+
+        HashMap<String, Double> updatedRates = parseXMLtoHashmap(currencyRateXML);
+
+        return updatedRates;
     }
 
     protected HashMap<String, Double> parseXMLtoHashmap(URL url){
 
-        HashMap<String, Double> localUpdatedRates = new HashMap<>();
+        HashMap <String, Double> localRateTable = new HashMap<String, Double>();
 
         try {
 
@@ -82,24 +73,13 @@ public class DownloadCurrencyTask extends AsyncTask<String, Void, HashMap<String
                         //if we can find  a key+value in the Hashmap updatedRates
                         String currencyTxt = currencyAttrib.getNodeValue();
                         Double rateValue =  Double.valueOf(attribs.getNamedItem(RATE).getNodeValue());
-                        //setUpdatedRates(currencyTxt, rateValue);
-                        localUpdatedRates.put(currencyTxt, rateValue);
+                        localRateTable.put(currencyTxt, rateValue);
                     }
                 }
             }
         } catch (IOException | ParserConfigurationException | SAXException | XPathExpressionException e) {
             e.printStackTrace();
         }
-        return localUpdatedRates;
-    }
-
-    public Double getRatesbyId(String curr){
-        for(HashMap.Entry<String, Double> entry : updatedRates.entrySet()) {
-            if(entry.getKey().equals(curr))
-                return entry.getValue();
-            else
-                continue;
-        }
-        return Double.valueOf(0);
+        return localRateTable;
     }
 }
