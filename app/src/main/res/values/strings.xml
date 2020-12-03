@@ -18,4 +18,12 @@
         <item>JPY</item>
         <item>MXN</item>
     </string-array>
+
+    <string name="floatingButton">Rates List</string>
+    <string name="textViewRate">Rate Element</string>
+    <string name="item_default_name">EUR</string>
+    <string name="item_default_rate">1</string>
+    <string name="euro_icon">Euro Icon</string>
+    <string name="item_default_symbol">€</string>
+
 </resources>

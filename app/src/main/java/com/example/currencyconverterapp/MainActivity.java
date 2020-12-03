@@ -1,6 +1,7 @@
 package com.example.currencyconverterapp;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.text.TextUtils;
@@ -40,9 +41,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public HashMap<String,Double> rateTable = new HashMap<String, Double>();
     DownloadCurrencyTask dlCurr;
-
-    public MainActivity() throws MalformedURLException {
-    }
 
     @SuppressLint("WrongThread")
     @Override
@@ -102,6 +100,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             result.setText(String.valueOf(resultValue));
         }
+
+        /*if(v.getId() == R.id.floatingActionButton){
+            Log.i("onClick", "pushed floating button");
+        }*/
     }
 
     @Override
@@ -203,5 +205,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             rate = (1/EURtoMXN) * EURtoJPY;
         }
         return rate;
+    }
+
+    public void RatesList(View view) {
+        Log.i("RatesList", "pushed the floating button");
+
+        Intent intent = new Intent(this, RateListActivity.class);
+        startActivity(intent);
+
     }
 }

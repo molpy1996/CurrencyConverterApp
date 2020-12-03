@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/medium_margin">
+
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/medium_margin">
+
+        <ImageView
+            android:id="@+id/item_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/euro_icon"
+            android:layout_centerVertical="true"
+            android:src="@drawable/item_euro_icon"/>
+
+        <TextView
+            android:id="@+id/item_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/item_icon"
+            android:layout_marginStart="@dimen/medium_margin"
+            android:layout_marginEnd="@dimen/large_margin"
+            android:text="@string/item_default_name"
+            android:textSize="@dimen/item_name_text_size"
+            android:fontFamily="monospace"
+            android:includeFontPadding="false"/>
+
+        <TextView
+            android:id="@+id/item_rate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/item_name"
+            android:text="@string/item_default_rate"
+            android:textSize="@dimen/item_name_text_size"/>
+
+    </RelativeLayout>
+
+</LinearLayout>
