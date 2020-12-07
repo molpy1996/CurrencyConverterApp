@@ -1,6 +1,9 @@
 package com.example.currencyconverterapp;
+import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -13,7 +16,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Map;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -32,6 +35,12 @@ public class DownloadCurrencyTask extends AsyncTask<String, Void, HashMap<String
 
     public URL currencyRateXML = null;
 
+    public boolean connectionState;
+
+    public boolean getConnectionState(){
+        return connectionState;
+    }
+
     @Override
     protected HashMap<String, Double> doInBackground(String... strings) {
 
@@ -41,9 +50,29 @@ public class DownloadCurrencyTask extends AsyncTask<String, Void, HashMap<String
             e.printStackTrace();
         }
 
+        connectionState = isConnectedToServer(currencyRateXML);
+
+        /*if(connectionState == true){
+            Log.i("onPreExecute", "connexion to BCE website done");
+        }else{
+            Log.i("onPreExecute", "connexion to BCE website failed");
+            Context context = this.getApplicationContext();
+            Toast.makeText(context, "Cannot connect to server..", Toast.LENGTH_LONG).show();
+        }*/
+
         HashMap<String, Double> updatedRates = parseXMLtoHashmap(currencyRateXML);
 
         return updatedRates;
+    }
+
+    public boolean isConnectedToServer(URL url){
+        try{
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.connect();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     protected HashMap<String, Double> parseXMLtoHashmap(URL url){

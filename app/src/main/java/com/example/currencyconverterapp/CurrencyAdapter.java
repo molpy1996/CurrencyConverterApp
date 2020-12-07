@@ -47,13 +47,13 @@ public class CurrencyAdapter extends BaseAdapter {
         String currencyName = currentCurrency.getName();
         Double currencyRate = currentCurrency.getRate();
         String currencyMnemonic = currentCurrency.getMnemonic();
+        String destCurrencySymbol = currentCurrency.getSymbol();
 
         TextView currencyNameView = convertView.findViewById(R.id.item_name);
         currencyNameView.setText(currencyName);
 
         TextView currencyRateView = convertView.findViewById(R.id.item_rate);
-        String[] currencySymbol = {"€", "$", "¥", "₱"};
-        currencyRateView.setText(currencyRate.toString() +" "+ currencySymbol[position]);
+        currencyRateView.setText(currencyRate.toString() +" "+ destCurrencySymbol);
 
         ImageView currencyIconView = convertView.findViewById(R.id.item_icon);
         String resourceName = "item_"+currencyMnemonic+"_icon";

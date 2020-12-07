@@ -1,6 +1,7 @@
 package com.example.currencyconverterapp;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -12,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -26,14 +28,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Spinner currencies2;
     EditText toConvert;
     String name;
-    ArrayAdapter<CharSequence> adapter;
+    ArrayAdapter<CharSequence> adapter1;
+    ArrayAdapter<CharSequence> adapter2;
     TextView result;
     Button button;
+
     double chosenRate;
     double value;
     double resultValue;
-    int chosenCurrency1;
-    int chosenCurrency2;
+    public int chosenCurrency1 = 0;
+    public int chosenCurrency2 = 0;
 
     double EURtoUSD = 0;
     double EURtoJPY = 0;
@@ -41,6 +45,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public HashMap<String,Double> rateTable = new HashMap<String, Double>();
     DownloadCurrencyTask dlCurr;
+
+    public int getChosenCurrency2() {
+        return chosenCurrency2;
+    }
 
     @SuppressLint("WrongThread")
     @Override
@@ -86,24 +94,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return;
             }
 
-            /* EUR = 1 / USD = 2 / JPY = 3 */
+            /* EUR = 0 / USD = 1 / JPY = 2 / MXN = 3 */
             chosenCurrency1 = currencies1.getSelectedItemPosition();
             chosenCurrency2 = currencies2.getSelectedItemPosition();
 
-            Log.i("onClick", "chosenCurrency1 : " + Integer.toString(chosenCurrency1));
-            Log.i("onClick", "chosenCurrency2 : " + Integer.toString(chosenCurrency2));
+           Log.i("onClick", "chosenCurrency1 : " + chosenCurrency1+" / chosenCurrency2 : " + chosenCurrency2);
 
             chosenRate = conversionRate(chosenCurrency1,chosenCurrency2);
+
+            Log.i("onClick", "chosenRate value : "+chosenRate);
 
             value = Double.parseDouble(String.valueOf(toConvert.getText()));
             resultValue = value*chosenRate;
 
             result.setText(String.valueOf(resultValue));
         }
-
-        /*if(v.getId() == R.id.floatingActionButton){
-            Log.i("onClick", "pushed floating button");
-        }*/
     }
 
     @Override
@@ -128,14 +133,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         currencies2 = (Spinner) findViewById(R.id.currencies_spinner2);
 
         // Create an ArrayAdapter using the string array and a default spinner layout
-        adapter = ArrayAdapter.createFromResource(this,
+        adapter1 = ArrayAdapter.createFromResource(this,
                 R.array.currenciesSpinner1, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        // Apply the adapter to the spinner
-        currencies1.setAdapter(adapter);
-        currencies2.setAdapter(adapter);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        adapter2 = ArrayAdapter.createFromResource(this,
+                R.array.currenciesSpinner2, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Apply the adapters to the spinners
+        currencies1.setAdapter(adapter1);
+        currencies2.setAdapter(adapter2);
+
 
         Log.i("onStart", "end of onStart function");
     }
@@ -143,6 +155,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
+
+        boolean connectionState = dlCurr.getConnectionState();
+
+        if(connectionState == true){
+            Log.i("onResume", "connexion to BCE website done");
+            Toast.makeText(this, "Updated all rates from the server !", Toast.LENGTH_LONG).show();
+        }else{
+            Log.i("onResume", "connexion to BCE website failed");
+            Toast.makeText(this, "Cannot connect to server..", Toast.LENGTH_LONG).show();
+        }
 
         button.setOnClickListener(this);
 
@@ -207,8 +229,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return rate;
     }
 
-    public void RatesList(View view) {
-        Log.i("RatesList", "pushed the floating button");
+    public void ratesList(View view) {
+        Log.i("ratesList", "pushed the floating button");
 
         Intent intent = new Intent(this, RateListActivity.class);
         startActivity(intent);

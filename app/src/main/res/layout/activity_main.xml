@@ -85,7 +85,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="33dp"
         android:layout_marginBottom="42dp"
-        android:onClick="RatesList"
+        android:onClick="ratesList"
         android:clickable="true"
         android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
