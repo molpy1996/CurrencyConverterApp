@@ -52,14 +52,6 @@ public class DownloadCurrencyTask extends AsyncTask<String, Void, HashMap<String
 
         connectionState = isConnectedToServer(currencyRateXML);
 
-        /*if(connectionState == true){
-            Log.i("onPreExecute", "connexion to BCE website done");
-        }else{
-            Log.i("onPreExecute", "connexion to BCE website failed");
-            Context context = this.getApplicationContext();
-            Toast.makeText(context, "Cannot connect to server..", Toast.LENGTH_LONG).show();
-        }*/
-
         HashMap<String, Double> updatedRates = parseXMLtoHashmap(currencyRateXML);
 
         return updatedRates;

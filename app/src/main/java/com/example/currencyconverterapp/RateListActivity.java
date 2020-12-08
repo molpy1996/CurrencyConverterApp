@@ -1,48 +1,65 @@
 package com.example.currencyconverterapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RateListActivity extends AppCompatActivity {
 
-    public  List <Currency> currencyList = new ArrayList<>();
-    public ListView ratesListView;
-    public TextView rateElementView;
+    private ListView ratesListView;
+    private TextView rateElementView;
 
+    private DataBaseManager dataBaseManager;
+
+    //TODO
+    // populate arrays with other currencies symbol&mnemonic
     static String[] currencySymbolList = {"€", "$", "¥", "₱"};
+    //static String[] currencyMnemonicList = {"", "", "", ""euro", "dollar", "yen", "peso"};
+    //TODO remplacer les mnemonics par les keys de la Hashmap (EUR, USD..) dans les images
+
+    private  List <Currency> currencyList = new ArrayList<>();
+    public HashMap<String, Double> updatedRates;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rate_list);
 
-        currencyList.add(new Currency("EUR", 1.0, "euro", "€"));
-        currencyList.add(new Currency("USD", 2.0, "dollar", "€"));
-        currencyList.add(new Currency("JPY", 3.0, "yen", "€"));
-        currencyList.add(new Currency("MXN", 4.0, "peso", "€"));
+        dataBaseManager = new DataBaseManager(this);
 
-        //TODO
-        // boucle qui valorise toutes les currencies de currencyList avec symbol de chosenCurrency2
-        // trouver le symbol avec chosenCurrency2 en index dans le tableau de symbol
-        //Spinner spinner2 = findViewById(R.id.currencies_spinner2);
-        //int destCurrency = spinner2.getSelectedItemPosition();
+        Intent intent = getIntent();
+        HashMap<String, Double> updatedRates = (HashMap<String, Double>)intent.getSerializableExtra("rateTable");
 
-        for(Currency curr : currencyList){
-            curr.setSymbol(currencySymbolList[0]);
+        for(HashMap.Entry<String, Double> entry : updatedRates.entrySet()){
+            dataBaseManager.insertRate(entry.getKey(), entry.getValue());
+        }
+        dataBaseManager.close();
+
+        int destCurrency = (int) intent.getSerializableExtra("destCurr");
+        for(HashMap.Entry<String, Double> entry : updatedRates.entrySet()){
+            currencyList.add(new Currency(entry.getKey(), entry.getValue(), entry.getKey().toLowerCase(), currencySymbolList[destCurrency]));
         }
 
         ratesListView = (ListView) findViewById(R.id.RatesListView);
         rateElementView = (TextView) findViewById(R.id.textViewRate);
 
-        //ArrayAdapter<String> RatesListAdapter = new ArrayAdapter<String>(this, R.layout.activity_rate_list, R.id.textViewRate, currencyList);
         ratesListView.setAdapter(new CurrencyAdapter(this, currencyList));
 
+    }
+
+    public void modifyRate(View view){
+        //TODO TP5 : modifying rates in OFF LINE mode
     }
 }

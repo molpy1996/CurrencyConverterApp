@@ -28,5 +28,4 @@ public class Currency {
 
     public String getSymbol(){return symbol;}
 
-    public void setSymbol(String _symbol){}
 }

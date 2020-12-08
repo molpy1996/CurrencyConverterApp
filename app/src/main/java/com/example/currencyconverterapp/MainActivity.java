@@ -39,16 +39,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public int chosenCurrency1 = 0;
     public int chosenCurrency2 = 0;
 
-    double EURtoUSD = 0;
-    double EURtoJPY = 0;
-    double EURtoMXN = 0;
-
+    //TODO transform Hashmap<String, Double> to Hashmap<Currency>
     public HashMap<String,Double> rateTable = new HashMap<String, Double>();
     DownloadCurrencyTask dlCurr;
-
-    public int getChosenCurrency2() {
-        return chosenCurrency2;
-    }
 
     @SuppressLint("WrongThread")
     @Override
@@ -76,9 +69,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             Log.i("onClick", "Pushed the button");
 
-            EURtoUSD = getRatesById("USD");
-            EURtoJPY = getRatesById("JPY");
-            EURtoMXN = getRatesById("MXN");
+            double EURtoUSD = getRatesById("USD");
+            double EURtoJPY = getRatesById("JPY");
+            double EURtoMXN = getRatesById("MXN");
 
             Log.i("onClick", "EURtoUSD = " + String.valueOf(EURtoUSD));
             Log.i("onClick", "EURtoJPY = " + String.valueOf(EURtoJPY));
@@ -129,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
 
+        //TODO improve the UI of spinners
         currencies1 = (Spinner) findViewById(R.id.currencies_spinner1);
         currencies2 = (Spinner) findViewById(R.id.currencies_spinner2);
 
@@ -156,11 +150,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
 
-        boolean connectionState = dlCurr.getConnectionState();
-
-        if(connectionState == true){
+        if(dlCurr.getConnectionState() == true){
             Log.i("onResume", "connexion to BCE website done");
-            Toast.makeText(this, "Updated all rates from the server !", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Updated rates from server !", Toast.LENGTH_LONG).show();
         }else{
             Log.i("onResume", "connexion to BCE website failed");
             Toast.makeText(this, "Cannot connect to server..", Toast.LENGTH_LONG).show();
@@ -185,6 +177,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.i("conversionRate", "in conversionRate function");
 
         double rate=0;
+        double EURtoUSD = getRatesById("USD");
+        double EURtoJPY = getRatesById("JPY");
+        double EURtoMXN = getRatesById("MXN");
+
+
         //si les 2 monnaies sont les mêmes on ne fait rien (rate = 1)
         if(curr1==curr2){
             rate=1;
@@ -233,7 +230,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.i("ratesList", "pushed the floating button");
 
         Intent intent = new Intent(this, RateListActivity.class);
+
+        intent.putExtra("rateTable", rateTable);
+        intent.putExtra("destCurr", chosenCurrency2);
+
         startActivity(intent);
 
+        /*if(dlCurr.getConnectionState()) {
+            startActivity(intent);
+        }else{
+            Toast.makeText(this, "Please connect to Internet", Toast.LENGTH_LONG).show();
+        }*/
     }
+
 }

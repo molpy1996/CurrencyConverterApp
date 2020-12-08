@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/euro_icon"
             android:layout_centerVertical="true"
-            android:src="@drawable/item_euro_icon"/>
+            android:src="@drawable/item_eur_icon"/>
 
         <TextView
             android:id="@+id/item_name"
