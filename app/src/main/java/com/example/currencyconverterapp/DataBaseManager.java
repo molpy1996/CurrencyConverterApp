@@ -23,6 +23,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
                       + " nameCurrency text not null,"
                       + " rateCurrency real not null"
                       + ")";
+        //TODO add mnemonic & symbol columns
 
         //we execute the SQLite request
         db.execSQL(strSql);

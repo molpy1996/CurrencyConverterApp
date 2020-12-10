@@ -22,11 +22,9 @@ public class RateListActivity extends AppCompatActivity {
 
     private DataBaseManager dataBaseManager;
 
-    //TODO
-    // populate arrays with other currencies symbol&mnemonic
+    //TODO populate arrays with other currencies symbol&mnemonic (https://www.xe.com/fr/symbols.php)
     static String[] currencySymbolList = {"€", "$", "¥", "₱"};
     //static String[] currencyMnemonicList = {"", "", "", ""euro", "dollar", "yen", "peso"};
-    //TODO remplacer les mnemonics par les keys de la Hashmap (EUR, USD..) dans les images
 
     private  List <Currency> currencyList = new ArrayList<>();
     public HashMap<String, Double> updatedRates;
@@ -40,6 +38,7 @@ public class RateListActivity extends AppCompatActivity {
         dataBaseManager = new DataBaseManager(this);
 
         Intent intent = getIntent();
+        //FIXME change updatedRates from HashMap<String, Double> to List<Currency>
         HashMap<String, Double> updatedRates = (HashMap<String, Double>)intent.getSerializableExtra("rateTable");
 
         for(HashMap.Entry<String, Double> entry : updatedRates.entrySet()){
@@ -48,6 +47,8 @@ public class RateListActivity extends AppCompatActivity {
         dataBaseManager.close();
 
         int destCurrency = (int) intent.getSerializableExtra("destCurr");
+        //FIXME
+        // currency rate to be modified according to destcurrency
         for(HashMap.Entry<String, Double> entry : updatedRates.entrySet()){
             currencyList.add(new Currency(entry.getKey(), entry.getValue(), entry.getKey().toLowerCase(), currencySymbolList[destCurrency]));
         }

@@ -1,11 +1,18 @@
 package com.example.currencyconverterapp;
 
-public class Currency {
+import java.io.Serializable;
+
+public class Currency implements Serializable {
     private String name;
     private double rate;
     private String mnemonic;
 
     private String symbol;
+
+    /*public Currency(String _name, double _rate){
+        this.name = _name;
+        this.rate = _rate;
+    }*/
 
     public Currency(String _name, double _rate, String _mnemonic, String _symbol){
         this.name = _name;
