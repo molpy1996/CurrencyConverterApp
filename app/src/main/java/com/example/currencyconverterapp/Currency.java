@@ -6,13 +6,7 @@ public class Currency implements Serializable {
     private String name;
     private double rate;
     private String mnemonic;
-
     private String symbol;
-
-    /*public Currency(String _name, double _rate){
-        this.name = _name;
-        this.rate = _rate;
-    }*/
 
     public Currency(String _name, double _rate, String _mnemonic, String _symbol){
         this.name = _name;
@@ -21,18 +15,13 @@ public class Currency implements Serializable {
         this.symbol = _symbol;
     }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
 
-    public Double getRate() {
-        return rate;
-    }
+    public Double getRate() { return rate; }
 
-    public String getMnemonic() {
-        return mnemonic;
-    }
+    public String getMnemonic() { return mnemonic; }
 
-    public String getSymbol(){return symbol;}
+    public String getSymbol(){ return symbol; }
 
+    public void setSymbol(String _symbol){ this.symbol = _symbol; }
 }

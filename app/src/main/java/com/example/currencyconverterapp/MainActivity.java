@@ -1,10 +1,8 @@
 package com.example.currencyconverterapp;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.os.StrictMode;
 import android.text.TextUtils;
 import android.util.Log;
@@ -19,46 +17,48 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.Serializable;
-import java.util.Map.Entry;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    Spinner currencies1;
-    Spinner currencies2;
-    EditText toConvert;
-    String name;
-    ArrayAdapter<CharSequence> adapter1;
-    ArrayAdapter<CharSequence> adapter2;
-    TextView result;
-    Button button;
+    public Spinner currencies1;
+    public Spinner currencies2;
+    public EditText toConvert;
+    public String name;
+    public ArrayAdapter<CharSequence> adapter1;
+    public ArrayAdapter<CharSequence> adapter2;
+    public TextView result;
+    public Button button;
 
-    double chosenRate;
-    double value;
-    double resultValue;
+    public Double chosenRate;
+    public Double value;
+    public String resultValue;
     public int chosenCurrency1 = 0;
     public int chosenCurrency2 = 0;
 
+    //TODO à initialiser avec le pays d'origine de l'utilisateur
+    public String chosenCurrencySymbol = "€";
+
     public List<Currency> rateTable = new ArrayList<>();
-    //public HashMap<String,Double> rateTable = new HashMap<String, Double>();
 
     //Hashmap linking currency name with currency symbol
     public HashMap<String, String> rateSymbol = new HashMap<>();
 
-    DownloadCurrencyTask dlCurr;
+    public DownloadCurrencyTask dlCurr;
 
     @SuppressLint("WrongThread")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        dlCurr = new DownloadCurrencyTask(this);
+        dlCurr.execute();
         rateSymbol = fillRateSymbol();
-
+       // dlCurr.execute();
         toConvert = (EditText) findViewById(R.id.Lbutton);
         name = toConvert.getText().toString();
 
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             chosenCurrency1 = currencies1.getSelectedItemPosition();
             chosenCurrency2 = currencies2.getSelectedItemPosition();
 
-            String chosenCurrencySymbol = (String) currencies2.getSelectedItem();
+            chosenCurrencySymbol = (String) currencies2.getSelectedItem();
             Log.i("onClick", "chosenCurrencySymbol : "+getSymbol(chosenCurrencySymbol) );
             Log.i("onClick", "chosenCurrency1 : " + chosenCurrency1+" / chosenCurrency2 : " + chosenCurrency2);
 
@@ -102,10 +102,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.i("onClick", "chosenRate value : "+chosenRate);
 
             value = Double.parseDouble(String.valueOf(toConvert.getText()));
-            resultValue = value*chosenRate;
 
-            //FIXME limit result to 2 decimals
-            result.setText(String.valueOf(resultValue)+" "+getSymbol(chosenCurrencySymbol));
+            //limitation of resultValue to 2 decimals
+            DecimalFormat numberFormat = new DecimalFormat("#.00");
+
+            resultValue = numberFormat.format(value*chosenRate);
+
+            //FIXME displays ",83 €" instead of "0,83 €"
+            result.setText(resultValue+" "+getSymbol(chosenCurrencySymbol));
         }
     }
 
@@ -114,9 +118,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Log.i("onStart", "in onStart function");
 
+        //FBManager FB = new FBManager();
+
         super.onStart();
 
-        //TODO improve the UI of spinners
         currencies1 = (Spinner) findViewById(R.id.currencies_spinner1);
         currencies2 = (Spinner) findViewById(R.id.currencies_spinner2);
 
@@ -136,18 +141,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         currencies1.setAdapter(adapter1);
         currencies2.setAdapter(adapter2);
 
-        dlCurr = new DownloadCurrencyTask();
-
-        //filling the List<Currency> with Hashmap<String, Double> returned by the Asynctask
-        try {
-            for(HashMap.Entry<String, Double> entry : dlCurr.execute().get().entrySet()) {
-                rateTable.add(new Currency(entry.getKey(), entry.getValue(), entry.getKey().toLowerCase(), getSymbolFromName(entry.getKey())));
-                Log.i("onStart", "key : "+entry.getKey()+", value : "+entry.getValue());
-            }
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-
         Log.i("onStart", "end of onStart function");
     }
 
@@ -155,12 +148,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
 
-        if(dlCurr.getConnectionState() == true){
+
+        //FIXME connection to server DOWN
+/*       if(dlCurr.getConnectionState() == true){
             Log.i("onResume", "connexion to BCE website done");
             Toast.makeText(this, "Updated rates from server !", Toast.LENGTH_LONG).show();
         }else{
             Log.i("onResume", "connexion to BCE website failed");
             Toast.makeText(this, "Cannot connect to server..", Toast.LENGTH_LONG).show();
+        }*/
+
+        //filling the List<Currency> with Hashmap<String, Double> returned by the Asynctask
+        //and initializing it with EUR, because dlCurr.execute.get() does not contain it
+        dlCurr = new DownloadCurrencyTask(this);
+        rateTable.add(new Currency("EUR", 1.0, "eur", "€"));
+      try {
+            for(HashMap.Entry<String, Double> entry : dlCurr.execute().get().entrySet()) {
+                rateTable.add(new Currency(entry.getKey(), entry.getValue(), entry.getKey().toLowerCase(), getSymbolFromName(entry.getKey())));
+                Log.i("onStart", "key : "+entry.getKey()+", value : "+entry.getValue() + " symbol : "+ getSymbolFromName(entry.getKey()));
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
         }
 
         button.setOnClickListener(this);
@@ -168,6 +176,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.i("OnResume", "in onResume Function");
     }
 
+    //from rateTable List
     public String getSymbol(String currName){
         String symbol="";
 
@@ -179,6 +188,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return symbol;
     }
 
+    //from rateSymbol HashMap
     public String getSymbolFromName(String currName){
         String symbol="";
 
@@ -191,6 +201,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return symbol;
     }
 
+    //FIXME use string.xml with an array of name+symbol instead of HashMap
     public HashMap<String, String> fillRateSymbol(){
 
         rateSymbol.put("EUR","€");
@@ -270,11 +281,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Intent intent = new Intent(this, RateListActivity.class);
 
-        //TODO verifier que Serializable fonctionne bien
-        intent.putExtra("rateTable", (Serializable) rateTable);
-        intent.putExtra("destCurr", chosenCurrency2);
+        intent.putExtra("currencyList", (Serializable) rateTable);
+        intent.putExtra("destCurrencySymbol", chosenCurrencySymbol);
+
+        intent.putExtra("connectionState", dlCurr.getConnectionState());
 
         startActivity(intent);
+
 
         /*if(dlCurr.getConnectionState()) {
             startActivity(intent);

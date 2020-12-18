@@ -83,5 +83,6 @@
     <string name="item_default_rate">1</string>
     <string name="euro_icon">Euro Icon</string>
     <string name="item_default_symbol">€</string>
+    <string name="returnbutton">ReturnButton</string>
 
 </resources>

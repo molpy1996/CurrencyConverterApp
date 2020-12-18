@@ -4,12 +4,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,15 +23,12 @@ public class RateListActivity extends AppCompatActivity {
 
     private ListView ratesListView;
     private TextView rateElementView;
-
-    private DataBaseManager dataBaseManager;
+    private FloatingActionButton returnButton;
 
     //TODO populate arrays with other currencies symbol&mnemonic (https://www.xe.com/fr/symbols.php)
-    static String[] currencySymbolList = {"€", "$", "¥", "₱"};
     //static String[] currencyMnemonicList = {"", "", "", ""euro", "dollar", "yen", "peso"};
 
     private  List <Currency> currencyList = new ArrayList<>();
-    public HashMap<String, Double> updatedRates;
 
 
     @Override
@@ -35,26 +36,23 @@ public class RateListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rate_list);
 
-        dataBaseManager = new DataBaseManager(this);
 
         Intent intent = getIntent();
-        //FIXME change updatedRates from HashMap<String, Double> to List<Currency>
-        HashMap<String, Double> updatedRates = (HashMap<String, Double>)intent.getSerializableExtra("rateTable");
+        currencyList = (List<Currency>) intent.getSerializableExtra("currencyList");
+        String destCurrencySymbol = (String) intent.getSerializableExtra("destCurrencySymbol");
+        Boolean connectionState = (Boolean) intent.getSerializableExtra("connectionState");
 
-        for(HashMap.Entry<String, Double> entry : updatedRates.entrySet()){
-            dataBaseManager.insertRate(entry.getKey(), entry.getValue());
-        }
-        dataBaseManager.close();
+        //TODO , if OFF-LINE
+        // fill currencyList from RatesListActivity with database
 
-        int destCurrency = (int) intent.getSerializableExtra("destCurr");
-        //FIXME
-        // currency rate to be modified according to destcurrency
-        for(HashMap.Entry<String, Double> entry : updatedRates.entrySet()){
-            currencyList.add(new Currency(entry.getKey(), entry.getValue(), entry.getKey().toLowerCase(), currencySymbolList[destCurrency]));
+        //symbol is set to chosenCurrency2
+        for(Currency currency : currencyList){
+            currency.setSymbol(destCurrencySymbol);
         }
 
         ratesListView = (ListView) findViewById(R.id.RatesListView);
         rateElementView = (TextView) findViewById(R.id.textViewRate);
+        returnButton = (FloatingActionButton) findViewById(R.id.floatingReturnButton);
 
         ratesListView.setAdapter(new CurrencyAdapter(this, currencyList));
 
@@ -62,5 +60,14 @@ public class RateListActivity extends AppCompatActivity {
 
     public void modifyRate(View view){
         //TODO TP5 : modifying rates in OFF LINE mode
+    }
+
+    public void returnMain(View view) {
+        Log.i("ReturnMain", "pushed the return to main activity button");
+
+        Intent intent_back = new Intent(this, MainActivity.class);
+
+        startActivity(intent_back);
+
     }
 }
