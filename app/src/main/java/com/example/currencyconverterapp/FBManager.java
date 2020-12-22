@@ -17,67 +17,61 @@ import static android.content.ContentValues.TAG;
 
 public class FBManager {
 
-    private DatabaseReference db;
+    private DatabaseReference dbRef;
 
     @IgnoreExtraProperties
-    public class Rate {
+    public class Rate_Item {
 
         public String currency;
         public Double rate;
 
-        public Rate() {
-            // Default constructor required for calls to DataSnapshot.getValue(Rate.class)
+        // Default constructor required for calls to DataSnapshot.getValue(Rate.class)
+        public Rate_Item() {
             ValueEventListener postListener = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    // ...
-                    Log.i("firebase", "data changed");
-
+                    Log.i("firebase", "data updated");
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    // Getting Post failed, log a message
                     Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                    // ...
                 }
             };
-            db.addValueEventListener(postListener);
+            dbRef.addValueEventListener(postListener);
         }
 
-        public Rate(String currency, Double rate) {
+        public Rate_Item(String currency, Double rate) {
             this.currency = currency;
             this.rate = rate;
         }
     }
 
     public void getInstance() {
-        db = FirebaseDatabase.getInstance().getReference();
+        dbRef = FirebaseDatabase.getInstance().getReference();
     }
 
 
     public void writeNewRate(String rateId, String devise, Double rateValue) {
-        Rate rate = new Rate(devise, rateValue);
-        db.child("rates").child(rateId).setValue(rate).addOnSuccessListener(new OnSuccessListener<Void>() {
+        Rate_Item rate = new Rate_Item(devise, rateValue);
+        dbRef.child("rates").child(rateId).setValue(rate).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                // Write was successful!
-                Log.i("FBManager", "data written");
-
+                Log.i("FBManager", "data written into firebase");
             }
         })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         // Write failed
-                        Log.e("FBManager", "error when writing data");
+                        Log.e("FBManager", "error when writing data to firebase");
 
                     }
                 });;
     }
 
-
+    //if we want to modify Rates in the firebase
     public void setRate(String rateId, String devise, Double rateValue) {
-        db.child("rates").child(rateId).child(devise).setValue(rateValue);
+        dbRef.child("rates").child(rateId).child(devise).setValue(rateValue);
     }
 }

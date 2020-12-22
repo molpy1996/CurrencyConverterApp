@@ -119,7 +119,6 @@ public class DownloadCurrencyTask extends AsyncTask<String, Void, HashMap<String
             DateBase = DBManager.getReadableDatabase();
             Cursor cursor = DateBase.rawQuery("SELECT * FROM " +TABLE_NAME, null);
             Log.i("DB-OFFLINE-MODE", cursor.toString());
-            //TODO unifiy code : move to Iterator loop
             if(cursor.moveToFirst()) {
                 do {
                     updatedRates.put(cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),
@@ -168,12 +167,10 @@ public class DownloadCurrencyTask extends AsyncTask<String, Void, HashMap<String
                 if (attribs.getLength() > 0) {
                     Node currencyAttrib = attribs.getNamedItem(CURRENCY);
                     if (currencyAttrib != null) {
-                        //if we can find  a key+value in the HashMap updatedRates
+                        //if we can find  a couple of key&value in updatedRates
                         String currencyTxt = currencyAttrib.getNodeValue();
                         Double rateValue =  Double.valueOf(attribs.getNamedItem(RATE).getNodeValue());
                         localRateTable.put(currencyTxt, rateValue);
-
-
                     }
                 }
             }
