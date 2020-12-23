@@ -49,6 +49,8 @@ public class DownloadCurrencyTask extends AsyncTask<String, Void, HashMap<String
     private HashMap<String, Double> updatedRates;
     private boolean connectionState;
 
+    //TODO populate arrays with other currencies symbol&mnemonic (https://www.xe.com/fr/symbols.php)
+
     public boolean getConnectionState(){
         return connectionState;
     }
@@ -98,13 +100,13 @@ public class DownloadCurrencyTask extends AsyncTask<String, Void, HashMap<String
                 long newRowId = DateBase.insert(TABLE_NAME, null, values);
                 Log.i("DB-ONLINE-MODE", Long.toString(newRowId));
 
-                //now we can push our DB content to the firebase DB !
+                //now we can push our DB content to the firebase DataBase !
                 FBManagerWrite.getInstance();
                 int id = 0;
                 Iterator it2 = updatedRates.entrySet().iterator();
                 while (it2.hasNext()) {
                     Map.Entry mapElement2 = (Map.Entry) it2.next();
-                    FBManagerWrite.writeNewRate(Integer.toString(id), (String) mapElement2.getKey(), (Double) mapElement2.getValue());
+                    FBManagerWrite.insertRate(Integer.toString(id), (String) mapElement2.getKey(), (Double) mapElement2.getValue());
                     Log.i("DB-ONLINE-MODE", "DB to Firebase : "+it.toString());
                     id++;
                 }
@@ -148,7 +150,6 @@ public class DownloadCurrencyTask extends AsyncTask<String, Void, HashMap<String
         HashMap <String, Double> localRateTable = new HashMap<String, Double>();
 
         try {
-
             HttpURLConnection urlConnection = (HttpURLConnection) currencyRateXML.openConnection();
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();

@@ -10,10 +10,10 @@ public class DBManager extends SQLiteOpenHelper {
     public static final int DB_VERSION = 1;
     public static final String DB_NAME = "T_rates.db";
 
-    //a class to represent the structure of the database (columns' names)
+    //a class that represents the structure of the database with the columns' names
     public final class RatesListManager {
 
-        private RatesListManager() {} // make the constructor private.
+        private RatesListManager() {}
         //defines the data base table contents
         public class RatesEntry implements BaseColumns {
             public static final String TABLE_NAME = "T_Rates";

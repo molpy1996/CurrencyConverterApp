@@ -25,7 +25,7 @@ public class FBManager {
         public String currency;
         public Double rate;
 
-        // Default constructor required for calls to DataSnapshot.getValue(Rate.class)
+        // Default constructor that we need for calls to DataSnapshot.getValue(Rate.class)
         public Rate_Item() {
             ValueEventListener postListener = new ValueEventListener() {
                 @Override
@@ -52,9 +52,9 @@ public class FBManager {
     }
 
 
-    public void writeNewRate(String rateId, String devise, Double rateValue) {
-        Rate_Item rate = new Rate_Item(devise, rateValue);
-        dbRef.child("rates").child(rateId).setValue(rate).addOnSuccessListener(new OnSuccessListener<Void>() {
+    public void insertRate(String rateId, String currency, Double rate) {
+        Rate_Item item = new Rate_Item(currency, rate);
+        dbRef.child("rates").child(rateId).setValue(item).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.i("FBManager", "data written into firebase");

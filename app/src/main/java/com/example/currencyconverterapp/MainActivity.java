@@ -118,8 +118,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Log.i("onStart", "in onStart function");
 
-        //FBManager FB = new FBManager();
-
         super.onStart();
 
         currencies1 = (Spinner) findViewById(R.id.currencies_spinner1);
@@ -150,13 +148,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         //FIXME connection to server DOWN
-/*       if(dlCurr.getConnectionState() == true){
+       if(dlCurr.getConnectionState() == true){
             Log.i("onResume", "connexion to BCE website done");
             Toast.makeText(this, "Updated rates from server !", Toast.LENGTH_LONG).show();
         }else{
             Log.i("onResume", "connexion to BCE website failed");
             Toast.makeText(this, "Cannot connect to server..", Toast.LENGTH_LONG).show();
-        }*/
+        }
 
         //filling the List<Currency> with Hashmap<String, Double> returned by the Asynctask
         //and initializing it with EUR, because dlCurr.execute.get() does not contain it
@@ -253,9 +251,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //PSEUDO CODE
     // if same name => return rate = 1
-    // else if spinner1 = EUR, find spinner2 in List<Currency> , return rate = List<Currency>(name of spinner 2)
-    // else if spinner2 = EUR, find spinner1 in List<Currency> , return rate = 1/List<Currency>(name of spinner 1)
-    // else find spinner1 & spinner2 in List<Currency>, return rate = [1/List<Currency>(name of spinner 1)] * List<Currency>(name of spinner 2)
+    // else if spinner1 = EUR, find spinner2 in List<Currency>
+    //      , return rate = List<Currency>(name of spinner 2)
+    // else if spinner2 = EUR, find spinner1 in List<Currency>
+    //      , return rate = 1/List<Currency>(name of spinner 1)
+    // else find spinner1 & spinner2 in List<Currency>
+    //      , return rate = [1/List<Currency>(name of spinner 1)] * List<Currency>(name of spinner 2)
+
     public double conversionRate(){
         Log.i("conversionRate", "in conversionRate function");
 
@@ -288,12 +290,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         startActivity(intent);
 
-
-        /*if(dlCurr.getConnectionState()) {
-            startActivity(intent);
-        }else{
-            Toast.makeText(this, "Please connect to Internet", Toast.LENGTH_LONG).show();
-        }*/
     }
 
 }

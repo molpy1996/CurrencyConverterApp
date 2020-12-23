@@ -25,9 +25,6 @@ public class RateListActivity extends AppCompatActivity {
     private TextView rateElementView;
     private FloatingActionButton returnButton;
 
-    //TODO populate arrays with other currencies symbol&mnemonic (https://www.xe.com/fr/symbols.php)
-    //static String[] currencyMnemonicList = {"", "", "", ""euro", "dollar", "yen", "peso"};
-
     private  List <Currency> currencyList = new ArrayList<>();
 
 
@@ -42,8 +39,6 @@ public class RateListActivity extends AppCompatActivity {
         String destCurrencySymbol = (String) intent.getSerializableExtra("destCurrencySymbol");
         Boolean connectionState = (Boolean) intent.getSerializableExtra("connectionState");
 
-        //TODO , if OFF-LINE
-        // fill currencyList from RatesListActivity with database
 
         //symbol is set to chosenCurrency2
         for(Currency currency : currencyList){
@@ -58,16 +53,11 @@ public class RateListActivity extends AppCompatActivity {
 
     }
 
-    public void modifyRate(View view){
-        //TODO TP5 : modifying rates in OFF LINE mode
-    }
-
     public void returnMain(View view) {
         Log.i("ReturnMain", "pushed the return to main activity button");
 
         Intent intent_back = new Intent(this, MainActivity.class);
 
         startActivity(intent_back);
-
     }
 }
